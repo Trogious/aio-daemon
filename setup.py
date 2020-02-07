@@ -18,7 +18,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.8",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-        "Software Development :: Libraries :: Python Modules",
+        "Topic :: Software Development :: Libraries :: Python Modules",
         "Development Status :: 4 - Beta",
     ],
     python_requires='>=3.7',
