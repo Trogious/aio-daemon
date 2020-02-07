@@ -1,0 +1,71 @@
+name: release and deploy module
+
+on: [push]
+
+jobs:
+  deploy:
+    if: contains(github.ref, 'tags/')
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+    - name: prepare release
+      id: prepare_release
+      run: |
+        TAG_NAME=`echo $GITHUB_REF | cut -d / -f3`
+        echo ::set-output name=tag_name::$TAG_NAME
+    - name: install dependencies
+      if: startsWith(steps.prepare_release.outputs.tag_name, 'v')
+      run: |
+        python -m pip install --upgrade pip
+        pip install --upgrade setuptools wheel
+    - name: assemble package
+      id: asseemble_package
+      if: success()
+      run: |
+        python setup.py sdist bdist_wheel
+        du -shc dist/*
+        TGZ_PATH=`find dist -name '*.gz'`
+        TGZ_NAME=`basename $TGZ_PATH`
+        echo ::set-output name=tgz_name::$TGZ_NAME
+        WHL_PATH=`find dist -name '*.whl'`
+        WHL_NAME=`basename $WHL_PATH`
+        echo ::set-output name=whl_name::$WHL_NAME
+    - name: create release
+      id: create_release
+      if: steps.prepare_release.outputs.tag_name && steps.asseemble_package.outputs.tgz_name && steps.asseemble_package.outputs.whl_name
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      with:
+        tag_name: ${{steps.prepare_release.outputs.tag_name}}
+        release_name: Release ${{steps.prepare_release.outputs.tag_name}}
+        draft: false
+        prerelease: false
+    - name: upload tgz
+      if: steps.create_release.outputs.upload_url && steps.asseemble_package.outputs.tgz_name
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      with:
+        upload_url: ${{steps.create_release.outputs.upload_url}}
+        asset_path: ./dist/${{steps.asseemble_package.outputs.tgz_name}}
+        asset_name: ${{steps.asseemble_package.outputs.tgz_name}}
+        asset_content_type: application/gzip
+    - name: upload whl
+      if: steps.create_release.outputs.upload_url && steps.asseemble_package.outputs.whl_name
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      with:
+        upload_url: ${{steps.create_release.outputs.upload_url}}
+        asset_path: ./dist/${{steps.asseemble_package.outputs.whl_name}}
+        asset_name: ${{steps.asseemble_package.outputs.whl_name}}
+        asset_content_type: application/gzip
+    - name: uplopad to pypi.org
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{secrets.PYPI_TOKEN}}

@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="aio_daemon",  # Replace with your own username
+    name="aio_daemon",
     version="0.1",
     author="Trog",
     author_email="trog@swmud.net",
@@ -18,6 +18,8 @@ setuptools.setup(
         "Programming Language :: Python :: 3.8",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
+        "Software Development :: Libraries :: Python Modules",
+        "Development Status :: 4 - Beta",
     ],
     python_requires='>=3.7',
 )

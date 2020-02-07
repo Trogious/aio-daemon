@@ -1,0 +1,7 @@
+dist
+build
+aio_daemon.egg-info
+*.log
+*.log.?
+*.pid
+__pycache__

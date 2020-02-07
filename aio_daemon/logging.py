@@ -1,5 +1,6 @@
 import logging
 import os
+from logging.handlers import RotatingFileHandler
 
 from .env import getenv_path
 
@@ -17,7 +18,7 @@ class Logger:
         if Logger.logger is None:
             Logger.logger = logging.getLogger(name)
             Logger.logger.setLevel(level)
-            handler = logging.handlers.RotatingFileHandler(path, maxBytes=max_bytes, backupCount=backup_count)
+            handler = RotatingFileHandler(path, maxBytes=max_bytes, backupCount=backup_count)
             handler.setFormatter(logging.Formatter(
                 '%(asctime)s|%(levelname)s|%(lineno)d|%(message)s', '%Y-%m-%d %H:%M:%S'))
             Logger.logger.addHandler(handler)
