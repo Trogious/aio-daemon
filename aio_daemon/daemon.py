@@ -1,4 +1,3 @@
-import abc
 import asyncio
 import os
 import signal
@@ -14,7 +13,7 @@ class Daemon:
     def __init__(self):
         self.logger = Logger.get_logger()
         self.pid_path = getenv_path('AIO_DAEMON_PID_PATH', Daemon.AIO_DAEMON_PID_PATH)
-        pass
+        self.pid = 0
 
     async def handle_signal2(self, loop, signum):
         self.logger.info('signal received: %d' % signum)
@@ -23,7 +22,8 @@ class Daemon:
     def create_pid(self):
         try:
             with open(self.pid_path, 'w') as f:
-                f.write(str(os.getpid()))
+                self.pid = os.getpid()
+                f.write(str(self.pid))
                 f.flush()
         except Exception as e:
             self.logger.error('cannot create PID file: ' + self.pid_path)
@@ -57,7 +57,8 @@ class Daemon:
         for s in [signal.SIGINT, signal.SIGUSR1, signal.SIGTERM]:
             loop.add_signal_handler(s, lambda s=s: loop.create_task(self.handle_signal2(loop, s)))
         try:
-            self.run()
+            self.run(loop)
+            self.logger.debug('run() executed')
             loop.run_forever()
         except OSError as e:
             self.logger.error(e.filename, exc_info=e)
@@ -66,6 +67,6 @@ class Daemon:
         finally:
             self.delete_pid()
 
-    @abc.abstractmethod
-    def run(self):
-        pass
+    # abstract method to override in subclasses
+    def run(self, loop):
+        raise NotImplementedError('run() needs to be overriden in a subclass')
