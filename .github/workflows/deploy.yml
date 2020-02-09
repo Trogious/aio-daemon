@@ -20,7 +20,7 @@ jobs:
       run: |
         TAG_NAME=`echo $GITHUB_REF | cut -d / -f3`
         echo ::set-output name=tag_name::$TAG_NAME
-        VERSION=`echo ${{steps.prepare_release.outputs.tag_name}} | cut -c2-`
+        VERSION=`echo $TAG_NAME | cut -c2-`
         echo ::set-output name=version_for_setup::$VERSION
     - name: install dependencies
       if: startsWith(steps.prepare_release.outputs.tag_name, 'v')
