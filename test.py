@@ -1,5 +1,4 @@
 import os
-import sys
 import time
 
 from aio_daemon import Daemon
@@ -33,24 +32,18 @@ class TestDaemon3(Daemon):
 
 
 if __name__ == '__main__':
+    d = TestDaemon()
+    d.start()
+    d = TestDaemon2()
+    d.start()
+    d = TestDaemon3()
+    d.start()
 
-    pid = os.fork()
-    if pid < 0:
-        print('fork failed: %d' % pid)
-        sys.exit(1)
-    elif pid == 0:
-        d = TestDaemon()
-        d.start()
-        d = TestDaemon2()
-        d.start()
-        d = TestDaemon3()
-        d.start()
-    else:
-        time.sleep(1)
-        logfile = './aio_daemon.log'
-        try:
-            with open(logfile, 'r') as f:
-                print(f.read())
-            os.remove(logfile)
-        except FileNotFoundError as e:
-            print(e)
+    time.sleep(1)
+    logfile = './aio_daemon.log'
+    try:
+        with open(logfile, 'r') as f:
+            print(f.read())
+        os.remove(logfile)
+    except FileNotFoundError as e:
+        print(e)
