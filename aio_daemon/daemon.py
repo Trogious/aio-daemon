@@ -59,7 +59,8 @@ class Daemon:
         try:
             self.run(loop)
             self.logger.debug('run() executed')
-            loop.run_forever()
+            self.run_loop(loop)
+            self.logger.debug('run_loop() executed')
         except OSError as e:
             self.logger.error(e.filename, exc_info=e)
         except Exception as e:
@@ -70,3 +71,7 @@ class Daemon:
     # abstract method to override in subclasses
     def run(self, loop):
         raise NotImplementedError('run() needs to be overriden in a subclass')
+
+    # ovveride to handle running the loop differently
+    def run_loop(self, loop):
+        loop.run_forever()
