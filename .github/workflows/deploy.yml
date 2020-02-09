@@ -17,6 +17,7 @@ jobs:
   deploy:
     if: contains(github.ref, 'tags/')
     needs: test
+    steps:
     - name: prepare release
       id: prepare_release
       run: |
