@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="aio_daemon",
-    version="0.1",
+    version="0.2",
     author="Trog",
     author_email="trog@swmud.net",
     description="Helper module for running async daemons.",
