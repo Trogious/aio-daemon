@@ -37,6 +37,8 @@ jobs:
       run: |
         pwd
         ls -la
+        cd ..
+        ls -la
         sed -i.bck -E 's/version="[[:digit:]]+\.[[:digit:]]+"/version="${{steps.prepare_release.outputs.version_for_setup}}"/' setup.py
         python setup.py sdist bdist_wheel
         du -shc dist/*
