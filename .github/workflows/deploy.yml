@@ -35,6 +35,8 @@ jobs:
       id: asseemble_package
       if: success()
       run: |
+        pwd
+        ls -la
         sed -i.bck -E 's/version="[[:digit:]]+\.[[:digit:]]+"/version="${{steps.prepare_release.outputs.version_for_setup}}"/' setup.py
         python setup.py sdist bdist_wheel
         du -shc dist/*
