@@ -15,7 +15,7 @@ class Daemon:
         self.pid_path = getenv_path('AIO_DAEMON_PID_PATH', Daemon.AIO_DAEMON_PID_PATH)
         self.pid = 0
 
-    async def handle_signal2(self, loop, signum):
+    def handle_signal2(self, loop, signum):
         self.logger.info('signal received: %d' % signum)
         loop.stop()
 
@@ -54,8 +54,8 @@ class Daemon:
         self.daemonize()
         self.create_pid()
         loop = asyncio.get_event_loop()
-        for s in [signal.SIGINT, signal.SIGUSR1, signal.SIGTERM]:
-            loop.add_signal_handler(s, lambda s=s: loop.create_task(self.handle_signal2(loop, s)))
+        for s in [signal.SIGINT, signal.SIGTERM]:
+            loop.add_signal_handler(s, lambda s=s: self.handle_signal2(loop, s))
         try:
             self.run(loop)
             self.logger.debug('run() executed')
