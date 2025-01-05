@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: set up Python 3.7
+    - name: set up Python 3.12
       uses: actions/setup-python@v1
       with:
-        python-version: 3.7
+        python-version: 3.12
     - name: execute test
       run: |
         python ./test.py
