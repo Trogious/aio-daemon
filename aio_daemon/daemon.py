@@ -53,7 +53,13 @@ class Daemon:
     def start(self):
         self.daemonize()
         self.create_pid()
-        loop = asyncio.get_event_loop()
+        loop = None
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            self.logger.debug("setting new loop: %s" % str(loop))
+            asyncio.set_event_loop(loop)
         for s in [signal.SIGINT, signal.SIGTERM]:
             loop.add_signal_handler(s, lambda s=s: self.handle_signal2(loop, s))
         try:
